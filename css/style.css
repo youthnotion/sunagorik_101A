@@ -1,0 +1,71 @@
+body {
+    background: linear-gradient(135deg, #ff4d4d, #ff9999);
+    font-family: 'Arial', sans-serif;
+}
+
+.logo-box img {
+    animation: pulse 1.5s infinite alternate;
+}
+
+/* Email collection styles (optional) */
+/* .email-collection {
+    width: 100%;
+} */
+
+
+.card {
+    margin: 0 auto;
+    padding: 3px;
+    width: 150px;
+    height: 150px;
+    background: transparent;
+    text-align: center;
+    border-radius: 10px;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.card img {
+    position: relative;
+    z-index: 2;
+    border-radius: 10px;
+}
+
+@property --angle{
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+}
+
+.card::after, .card::before{
+    content: '';
+    position: absolute;
+    height: 200px;
+    width: 200px;
+    background-image: conic-gradient(from var(--angle), transparent 80%, #ff4d4d);
+    top: 50%;
+    left: 50%; 
+    translate: -50% -50%;
+    z-index: 0;
+    border-radius: 10px;
+    animation: 3s spin linear infinite;
+}
+
+.card::before{
+    filter: blur(1.5rem);
+    opacity: 0.5;
+}
+
+@keyframes spin{
+    from{
+      --angle: 0deg;
+    }
+    to{
+      --angle: 360deg;
+    }
+}
+
+.custom-dialog{
+    z-index: 10;
+}
