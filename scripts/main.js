@@ -1,3 +1,14 @@
+console.log("hello");
+
+FBInstant.initializeAsync().then(() => {
+    preloadImages().then(() => {
+        FBInstant.setLoadingProgress(100);
+        FBInstant.startGameAsync().then(() => {
+            console.log("Game started");
+        });
+    });
+});
+
 const firebaseConfig = {
     apiKey: "AIzaSyB4Pz--PR2t0AM_9f3Zy8EOJlUsqroIa8E",
     authDomain: "sunagorik-io.firebaseapp.com",
@@ -158,26 +169,48 @@ const results = [
 ];
 
 const preloadedImages = [];
+let loadedImages = 0;
+const totalImages = questions.length + results.reduce((acc, result) => acc + result.imgs.length, 0);
 
 function preloadImages() {
-    questions.forEach(q => {
-        const img = new Image();
-        img.src = q.image;
-        preloadedImages.push(img);
-    });
+    return new Promise((resolve) => {
+        if (totalImages === 0) {
+            resolve();
+            return;
+        }
 
-    results.forEach(result => {
-        result.imgs.forEach(imgSrc => {
+        function updateProgress() {
+            const progress = Math.round((loadedImages / totalImages) * 100);
+            FBInstant.setLoadingProgress(progress);
+            if (loadedImages === totalImages) {
+                resolve();
+            }
+        }
+
+        questions.forEach(q => {
             const img = new Image();
-            img.src = imgSrc;
+            img.src = q.image;
+            img.onload = () => {
+                loadedImages++;
+                updateProgress();
+            };
             preloadedImages.push(img);
         });
-    });
 
-    console.log("Images preloaded:", preloadedImages);
+        results.forEach(result => {
+            result.imgs.forEach(imgSrc => {
+                const img = new Image();
+                img.src = imgSrc;
+                img.onload = () => {
+                    loadedImages++;
+                    updateProgress();
+                };
+                preloadedImages.push(img);
+            });
+        });
+    });
 }
 
-window.onload = preloadImages;
 
 let currentQuestion = 0;
 let totalScore = 0;
@@ -190,11 +223,13 @@ const retryBtn = getElementbyID("retry-btn");
 const skipBtn = getElementbyID('skip-email-btn')
 const submitBtn = getElementbyID('submit-email-btn');
 const emailSec = getElementbyID("email-collection");
+const shareBtn = getElementbyID('share-btn');
 
 startBtn.addEventListener('click', startQuiz);
 retryBtn.addEventListener('click', retryQuiz);
 skipBtn.addEventListener('click', showResult);
 submitBtn.addEventListener('click', emailSubmit);
+shareBtn.addEventListener('click', shareGame);
 
 
 function getElementbyID(id) {
@@ -290,8 +325,7 @@ function loadQuestion() {
     const shuffledOptions = shuffle([...question.options]);
     shuffledOptions.forEach(option => {
         const button = document.createElement('button');
-        button.className = `option bg-[#ffe6e6] text-[#ff4d4d] px-4 py-2 lg:px-8 lg:py-4 text-center text-lg font-bold rounded-[15px] cursor-pointer 
-        transition-all duration-500 hover:bg-[#ffcccc] hover:scale-105 lg:hover:scale-110 border border-black `;
+        button.className = `option`;
         button.textContent = option.text;
         button.onclick = () => handleAnswer(option.score);
         optionsElement.appendChild(button);
@@ -346,6 +380,29 @@ function retryQuiz() {
     totalScore = 0;
     hideComponent(resultSec);
     showComponent(startSec);
+}
+
+function shareGame() {
+    const result = results.find(r => totalScore >= r.minScore);
+    const randomImgSrc = result.imgs[Math.floor(Math.random() * result.imgs.length)];
+    const preloadedResultImg = preloadedImages.find(img => img.src.includes(randomImgSrc));
+
+    const payload = {
+        intent: 'SHARE',
+        image: preloadedResultImg ? preloadedResultImg.src : randomImgSrc,
+        text: `আমি ${result.title}!\nআপনি কত ভালো সুনাগরিক? পরীক্ষা করে দেখুন!`,
+        data: {
+            myResult: result.title,
+            score: totalScore
+        }
+    };
+    console.log('Payload:', payload);
+    
+    FBInstant.shareAsync(payload).then(() => {
+        console.log('Share successful');
+    }).catch((error) => {
+        console.error('Error sharing:', error);
+    });
 }
 
 function showEmailCol() {
