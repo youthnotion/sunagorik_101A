@@ -386,22 +386,105 @@ function shareGame() {
     const result = results.find(r => totalScore >= r.minScore);
     const randomImgSrc = result.imgs[Math.floor(Math.random() * result.imgs.length)];
     const preloadedResultImg = preloadedImages.find(img => img.src.includes(randomImgSrc));
+    const userPic = FBInstant.player.getPhoto(); // Get user profile picture
+    const userName = FBInstant.player.getName();
+    console.log("User Pic:", userPic);
+    console.log("User Name:", userName);
+    console.log("Preloaded Image:", preloadedResultImg ? preloadedResultImg.src : randomImgSrc);
 
-    const payload = {
-        intent: 'SHARE',
-        image: preloadedResultImg ? preloadedResultImg.src : randomImgSrc,
-        text: `আমি ${result.title}!\nআপনি কত ভালো সুনাগরিক? পরীক্ষা করে দেখুন!`,
-        data: {
-            myResult: result.title,
-            score: totalScore
-        }
-    };
-    console.log('Payload:', payload);
+    function generateShareImage(callback) {
+        let canvas = document.createElement('canvas');
+        let ctx = canvas.getContext('2d');
+
+        canvas.width = 800;  // Adjust as needed
+        canvas.height = 800;  // Adjust as needed
+
+        let bgImage = new Image();
+        bgImage.src = preloadedResultImg ? preloadedResultImg.src : randomImgSrc;
+        bgImage.crossOrigin = 'Anonymous';
+
+        bgImage.onload = function () {
+            // Draw user's profile image
+            let profileImg = new Image();
+            profileImg.src = userPic;
+            profileImg.crossOrigin = 'Anonymous';
+
+            profileImg.onload = function () {
+
+                ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+
+                let profileSize = 120;
+                let profileX = 340;
+                let profileY = canvas.height - 350;
+
+                ctx.beginPath();
+                ctx.arc(profileX + profileSize / 2, profileY + profileSize / 2, profileSize / 2, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.clip();
+                ctx.drawImage(profileImg, profileX, profileY, profileSize, profileSize);
+                ctx.restore();
+
+                // Save the canvas state
+                ctx.save();
+
+                // Draw user name (just below the profile image)
+                ctx.fillStyle = "#FF0000";
+                ctx.font = "bold 40px Arial";
+                ctx.textAlign = "center";
+
+                textY = 200;
+                textX = 200;
+
+                // Debugging text settings
+                console.log("Font Settings:", ctx.font, ctx.textAlign, ctx.fillStyle);
+
+                // Adjust text position to make sure it's centered
+                ctx.fillText(userName, textX, textY);
+
+                // Debugging text drawing
+                console.log("Drawing user name at:", textX, textY);
+                
+                // Draw score on the next line under the user name
+                ctx.fillText(`আমি ${result.title}`, textX + 50, textY + 90);  // Adjusted to next line
+                
+                // Debugging text drawing
+                console.log("Drawing score at:", textX + 50, textY + 90);
+
+                // Restore the canvas state
+                ctx.restore();
+                
+                // Convert canvas to Base64 image
+                let dataURL = canvas.toDataURL("image/png");
+                callback(dataURL);
+            };
+            profileImg.onerror = function() {
+                console.error('Profile image failed to load');
+            };
+        };
+        bgImage.onerror = function() {
+            console.error('Background image failed to load');
+        };
+    }
+
+    generateShareImage((base64Image) => {
+        const payload = {
+            intent: 'SHARE',
+            image: base64Image,
+            text: `আমি ${result.title}!\nআপনি কত ভালো সুনাগরিক? পরীক্ষা করে দেখুন!`,
+            data: {
+                myResult: result.title,
+                score: totalScore
+            }
+        };
+        console.log('Payload:', payload);
     
-    FBInstant.shareAsync(payload).then(() => {
-        console.log('Share successful');
-    }).catch((error) => {
-        console.error('Error sharing:', error);
+        if (FBInstant.shareAsync) {
+            FBInstant.shareAsync(payload)
+            .then(() => console.log('Share Successful!'))
+            .catch(error => console.error('Error sharing: ', error));
+        } else {
+            console.error('FBInstant.shareAsync is not available.');
+        }        
     });
 }
 
