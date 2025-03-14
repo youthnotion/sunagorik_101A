@@ -396,21 +396,38 @@ function retryQuiz() {
 }
 
 function shareGame() {
+<<<<<<< HEAD
     const userPic = FBInstant.player.getPhoto();
     const userName = FBInstant.player.getName();
+=======
+    const result = results.find(r => totalScore >= r.minScore);
+    const randomImgSrc = result.imgs[Math.floor(Math.random() * result.imgs.length)];
+    const preloadedResultImg = preloadedImages.find(img => img.src.includes(randomImgSrc));
+    const userPic = FBInstant.player.getPhoto(); // Get user profile picture
+    const userName = FBInstant.player.getName();
+    console.log("User Pic:", userPic);
+    console.log("User Name:", userName);
+    console.log("Preloaded Image:", preloadedResultImg ? preloadedResultImg.src : randomImgSrc);
+>>>>>>> c4a9707c3c0e33867bf5955252be4eb63f3bbb16
 
     function generateShareImage(callback) {
         let canvas = document.createElement('canvas');
         let ctx = canvas.getContext('2d');
 
+<<<<<<< HEAD
         canvas.width = 800;
         canvas.height = 800;
+=======
+        canvas.width = 800;  // Adjust as needed
+        canvas.height = 800;  // Adjust as needed
+>>>>>>> c4a9707c3c0e33867bf5955252be4eb63f3bbb16
 
         let bgImage = new Image();
         bgImage.src = preloadedResultImg ? preloadedResultImg.src : randomImgSrc;
         bgImage.crossOrigin = 'Anonymous';
 
         bgImage.onload = function () {
+<<<<<<< HEAD
             ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
 
             let profileSize = 115;
@@ -431,25 +448,73 @@ function shareGame() {
             ctx.strokeText(`আমি ${result.title} ${result.icon}`, 400, profileY + profileSize + 100);
             ctx.fillText(`আমি ${result.title} ${result.icon}`, 400, profileY + profileSize + 100);
 
+=======
+            // Draw user's profile image
+>>>>>>> c4a9707c3c0e33867bf5955252be4eb63f3bbb16
             let profileImg = new Image();
             profileImg.src = userPic;
             profileImg.crossOrigin = 'Anonymous';
 
             profileImg.onload = function () {
+<<<<<<< HEAD
                 ctx.beginPath();
                 ctx.arc(profileX + profileSize / 2, profileY + profileSize / 2, profileSize / 2 + 5, 0, Math.PI * 2);
                 ctx.strokeStyle = "#000000";
                 ctx.lineWidth = 8;
                 ctx.stroke();
                 ctx.closePath();
+=======
+
+                ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+
+                let profileSize = 120;
+                let profileX = 340;
+                let profileY = canvas.height - 350;
+>>>>>>> c4a9707c3c0e33867bf5955252be4eb63f3bbb16
 
                 ctx.beginPath();
                 ctx.arc(profileX + profileSize / 2, profileY + profileSize / 2, profileSize / 2, 0, Math.PI * 2);
                 ctx.closePath();
                 ctx.clip();
+<<<<<<< HEAD
 
                 ctx.drawImage(profileImg, profileX, profileY, profileSize, profileSize);
         
+=======
+                ctx.drawImage(profileImg, profileX, profileY, profileSize, profileSize);
+                ctx.restore();
+
+                // Save the canvas state
+                ctx.save();
+
+                // Draw user name (just below the profile image)
+                ctx.fillStyle = "#FF0000";
+                ctx.font = "bold 40px Arial";
+                ctx.textAlign = "center";
+
+                textY = 200;
+                textX = 200;
+
+                // Debugging text settings
+                console.log("Font Settings:", ctx.font, ctx.textAlign, ctx.fillStyle);
+
+                // Adjust text position to make sure it's centered
+                ctx.fillText(userName, textX, textY);
+
+                // Debugging text drawing
+                console.log("Drawing user name at:", textX, textY);
+                
+                // Draw score on the next line under the user name
+                ctx.fillText(`আমি ${result.title}`, textX + 50, textY + 90);  // Adjusted to next line
+                
+                // Debugging text drawing
+                console.log("Drawing score at:", textX + 50, textY + 90);
+
+                // Restore the canvas state
+                ctx.restore();
+                
+                // Convert canvas to Base64 image
+>>>>>>> c4a9707c3c0e33867bf5955252be4eb63f3bbb16
                 let dataURL = canvas.toDataURL("image/png");
                 callback(dataURL);
             };
@@ -472,6 +537,10 @@ function shareGame() {
                 score: totalScore
             }
         };
+<<<<<<< HEAD
+=======
+        console.log('Payload:', payload);
+>>>>>>> c4a9707c3c0e33867bf5955252be4eb63f3bbb16
     
         if (FBInstant.shareAsync) {
             FBInstant.shareAsync(payload)
