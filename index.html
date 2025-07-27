@@ -5,22 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz App</title>
     <link rel="stylesheet" href="./css/style.css">
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
 </head>
-<body>
-
-    <div class=" container">
+<body class=" min-h-[100vh] py-6 overflow-y-auto flex flex-col justify-center items-center">
+    <div class=" container w-[90%] max-w-[700px] min-h-[450px] text-red-500 bg-white p-4 rounded-xl shadow-2xl flex flex-col gap-4 text-center">
         <!-- Logo Section -->
-        <div class="logo-box">
-            <img src="./assets/logo.png" alt="Logo">
+        <div class="logo-box flex justify-center">
+            <img src="./assets/logo.png" alt="Logo" class=" w-[75px] h-[75px]">
         </div>
 
         <!-- Intro Section -->
-        <div id="start" class=" start">
-            <div id="intro" class="intro">আপনি কেমন নাগরিক? চলুন জানা যাক! কুইজে অংশ নিন!</div>
+        <div id="start" class=" flex flex-col gap-6 m-12">
+            <div id="intro" class="intro text-2xl font-semibold">আপনি কেমন নাগরিক? চলুন জানা যাক! কুইজে অংশ নিন!</div>
             
             <!--start button-->
             <div>
-                <button id="start-btn" class=" start-btn"
+                <button id="start-btn" class=" px-8 py-2 text-white text-lg font-medium bg-red-500 rounded-xl cursor-pointer hover:bg-transparent 
+                    border-2 border-red-500 hover:text-red-500 transition-all duration-500 hover:scale-110 "
                 >
                     শুরু করুন
                 </button>
@@ -28,34 +29,36 @@
         </div>
 
         <!-- Quiz section -->
-        <div id="quiz" class=" quiz hidden">
+        <div id="quiz" class=" w-full hidden">
             <!-- Progress Bar -->
-            <div id="progress" class="progress-bar">
-                <div class=" progress-bar-fill"></div>
+            <div id="progress" class="progress-bar w-full h-[15px] bg-[rgba(255,77,77,0.3)] rounded-[10px] my-2 overflow-hidden relative ">
+                <div class="h-full w-0 bg-gradient-to-r from-[#ff4d4d] to-[#ff9999] rounded-[10px] transition-all duration-500"></div>
             </div>
 
             <!-- Question Section -->
-            <div id="question_sec" class=" question_sec content-wrapper">
-                <div id="ques_img" class=" ques_img image-box">
-                    <img class=" img_ques" src="" alt="Question Image" />
+            <div id="question_sec" class="content-wrapper lg:mx-8 my-2 lg:my-4">
+                <div id="ques_img" class="image-box flex justify-center">
+                    <img class="  w-[125px] h-[120px] lg:w-[150px] lg:h-[145px] object-cover rounded-[15px] lg:mb-4 " src="placeholder.png" alt="Question Image">
                 </div>
-                <div id="question" class="question">Loading question...</div>
-                <div id="options" class="options"></div>
+                <div id="question" class="question text-[18px] lg:text-[22px] my-4">Loading question...</div>
+                <div id="options" class="options w-full flex flex-col gap-6"></div>
             </div>
         </div>
 
         <!-- Email Collection Section -->
-        <div id="email-collection" class=" email-collection hidden">
+        <div id="email-collection" class="email-collection flex flex-col gap-4 my-6 hidden">
             <div>
-                <label for="email" id="email-label" class=" email-label ">আপনার ই-মেইল দিন:</label>
-                <input type="email" id="email" class=" email " placeholder="your-email@example.com" required>
+                <label for="email" class="block text-lg font-medium mb-1">আপনার ই-মেইল দিন:</label>
+                <input type="email" id="email" class=" w-[300px] border-2 border-red-500 rounded-xl px-4 py-2" placeholder="your-email@example.com" required>
             </div>
-            <div id="email-sub-div" class=" email-sub-div ">
-                <button id="submit-email-btn" class=" submit-email-btn"
+            <div class=" flex justify-center gap-4">
+                <button id="submit-email-btn" class="px-8 py-2 text-white text-lg font-medium bg-red-500 rounded-xl cursor-pointer hover:bg-transparent 
+                    border-2 border-red-500 hover:text-red-500 transition-all duration-500 hover:scale-110"
                 >
                     এগিয়ে যান
                 </button>
-                <button id="skip-email-btn" class=" skip-email-btn"
+                <button id="skip-email-btn" class="px-8 py-2 text-white text-lg font-medium bg-red-500 rounded-xl cursor-pointer hover:bg-transparent 
+                    border-2 border-red-500 hover:text-red-500 transition-all duration-500 hover:scale-110"
                 >
                     এখনই নয়
                 </button>
@@ -64,47 +67,40 @@
 
         <!-- Result Section -->
         <div id="result" class="result-container hidden">
-            <h2 class=" reshead">আপনার স্কোর:</h2>
-            <div class=" resultImg">
-                <div class="card">
+            <h2 class=" text-xl font-medium">আপনার স্কোর:</h2>
+            <div class=" resultImg my-6 flex justify-center">
+                <div class="card border-[3px]">
                     <img
                         src=""
                         alt="Your Result" 
-                        class="resImg" 
+                        class="resImg w-full h-full object-cover t-1" 
                     />
                 </div>
             </div>
-            <div id="result" class=" result">
-                <h1 class="result-title"></h1>
-                <div class="badge"></div>
+            <div id="result" class=" flex justify-center gap-1 text-lg">
+                <h1 class="result-title font-semibold"></h1>
+                <div class="badge animate-bounce text-3xl"></div>
             </div>
-            <!--buttons-->
-            <div class="res-btn-div">
-                <div>
-                    <button id="retry-btn" class=" retry-btn"
-                    >
-                        আবার চেষ্টা করুন
-                    </button>
-                </div>
-                <div>
-                    <button id="share-btn" class=" share-btn"
-                    >
-                        শেয়ার করুন
-                    </button>
-                </div>
+            <!--retry button-->
+            <div>
+                <button id="retry-btn" class=" px-8 py-2 text-white text-lg font-medium bg-red-500 rounded-xl cursor-pointer hover:bg-transparent 
+                    border-2 border-red-500 hover:text-red-500 transition-all duration-500 hover:scale-110 "
+                >
+                    আবার চেষ্টা করুন
+                </button>
             </div>
         </div>
     </div>
 
     <!-- Custom Dialog Box -->
-    <div id="custom-dialog" class="custom-dialog hidden">
-        <div class="dialog-content">
-            <p id="dialog-message" class="dialog-message"></p>
-            <button id="dialog-ok" class="dialog-ok">OK</button>
+    <div id="custom-dialog" class="custom-dialog hidden fixed inset-0 flex items-center justify-center bg-black/80">
+        <div class="dialog-content bg-white p-6 rounded-lg shadow-lg text-center">
+            <p id="dialog-message" class="dialog-message text-lg mb-4"></p>
+            <button id="dialog-ok" class="dialog-ok px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">OK</button>
         </div>
     </div>
     
-    <script src="https://connect.facebook.net/en_US/fbinstant.6.3.js"></script>
+
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <script src="./scripts/main.js"></script>

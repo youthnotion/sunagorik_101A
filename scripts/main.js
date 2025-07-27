@@ -1,26 +1,3 @@
-FBInstant.initializeAsync().then(() => {
-    const googleFont = new FontFace(
-        'Oswald',
-        'url(https://fonts.gstatic.com/s/oswald/v53/TK3iWkUHHAIjg752GT8G.woff2)'
-    );
-
-    googleFont.load().then((loadedFont) => {
-        document.fonts.add(loadedFont);
-        console.log('Font loaded:', loadedFont);
-        return document.fonts.ready;
-    }).then(() => {
-        console.log('Font is ready');
-        return preloadImages();
-    }).then(() => {
-        FBInstant.setLoadingProgress(100);
-        return FBInstant.startGameAsync();
-    }).then(() => {
-        console.log("Game started");
-    }).catch((error) => {
-        console.error('Error during initialization:', error);
-    });
-});
-
 const firebaseConfig = {
     apiKey: "AIzaSyB4Pz--PR2t0AM_9f3Zy8EOJlUsqroIa8E",
     authDomain: "sunagorik-io.firebaseapp.com",
@@ -140,89 +117,67 @@ const results = [
         minScore: 90, 
         title: 'অলরাউন্ডার সুনাগরিক', 
         icon: '🏅',
-        imgs: ["./assets/resizedAward/01_Allrounder Sunagorik 1.png"]
+        imgs: ["./assets/Award/01_Allrounder Sunagorik 1.png"]
     },
     { 
         minScore: 70, 
         title: 'Pookie সুনাগরিক', 
         icon: '🥹🎀',
-        imgs: ["./assets/resizedAward/02_Pookie Sunagorik 1.jpg", "./assets/resizedAward/02_Pookie Sunagorik 2.jpg", "./assets/resizedAward/02_Pookie Sunagorik 3.jpeg"]
+        imgs: ["./assets/Award/02_Pookie Sunagorik 1.jpg", "./assets/Award/02_Pookie Sunagorik 2.jpg", "./assets/Award/02_Pookie Sunagorik 3.jpeg"]
     },
     { 
         minScore: 50, 
         title: 'প্রেমিক সুনাগরিক', 
         icon: '🥰',
-        imgs: ["./assets/resizedAward/03_Premik Sunagorik 01.jpeg", "./assets/resizedAward/03_Premik Sunagorik 02.jpg", "./assets/resizedAward/03_Premik sunagorik 03.jpg"] 
+        imgs: ["./assets/Award/03_Premik Sunagorik 01.jpeg", "./assets/Award/03_Premik Sunagorik 02.jpg", "./assets/Award/03_Premik sunagorik 03.jpg"] 
     },
     { 
         minScore: 30, 
         title: 'ইন্টেরিম সুনাগরিক', 
         icon: '⌛',
-        imgs: ["./assets/resizedAward/04_Majhemodhye Sunagorik 02.jpeg", "./assets/resizedAward/04_Majhemodhye Sunagorik 03.jpg", "./assets/resizedAward/04_majhemodhye sunagorik.png"]
+        imgs: ["./assets/Award/04_Majhemodhye Sunagorik 02.jpeg", "./assets/Award/04_Majhemodhye Sunagorik 03.jpg", "./assets/Award/04_majhemodhye sunagorik.png"]
     },
     { 
         minScore: 0, 
         title: 'পল্টিবাজ সুনাগরিক', 
         icon: '🤸',
-        imgs: ["./assets/resizedAward/05_Poltibaj sunagorik 2.jpeg", "./assets/resizedAward/05_Poltibaj sunagorik 3.jpeg", "./assets/resizedAward/05_Poltibaj sunagorik.png"]
+        imgs: ["./assets/Award/05_Poltibaj sunagorik 2.jpeg", "./assets/Award/05_Poltibaj sunagorik 3.jpeg", "./assets/Award/05_Poltibaj sunagorik.png"]
     },
     { 
         minScore: -20, 
         title: 'ঘুমন্ত সুনাগরিক', 
         icon: '😴',
-        imgs: ["./assets/resizedAward/06_Ghumonto sunagorik 02.jpeg", "./assets/resizedAward/06_ghumonto sunagorik 03.jpeg", "./assets/resizedAward/06_ghumonto sunagorik.png"] 
+        imgs: ["./assets/Award/06_Ghumonto sunagorik 02.jpeg", "./assets/Award/06_ghumonto sunagorik 03.jpeg", "./assets/Award/06_ghumonto sunagorik.png"] 
     },
     { 
         minScore: Number.MIN_SAFE_INTEGER, 
         title: 'ডেড ইনসাইড সুনাগরিক', 
         icon: '😵',
-        imgs: ["./assets/resizedAward/07_Ded inside sunagorik 1.jpeg", "./assets/resizedAward/07_Ded inside sunagorik 2.webp", "./assets/resizedAward/07_Ded inside sunagorik 3.png"] 
+        imgs: ["./assets/Award/07_Ded inside sunagorik 1.jpeg", "./assets/Award/07_Ded inside sunagorik 2.webp", "./assets/Award/07_Ded inside sunagorik 3.png"] 
     },
 ];
 
 const preloadedImages = [];
-let loadedImages = 0;
-const totalImages = questions.length + results.reduce((acc, result) => acc + result.imgs.length, 0);
 
 function preloadImages() {
-    return new Promise((resolve) => {
-        if (totalImages === 0) {
-            resolve();
-            return;
-        }
+    questions.forEach(q => {
+        const img = new Image();
+        img.src = q.image;
+        preloadedImages.push(img);
+    });
 
-        function updateProgress() {
-            const progress = Math.round((loadedImages / totalImages) * 100);
-            FBInstant.setLoadingProgress(progress);
-            if (loadedImages === totalImages) {
-                resolve();
-            }
-        }
-
-        questions.forEach(q => {
+    results.forEach(result => {
+        result.imgs.forEach(imgSrc => {
             const img = new Image();
-            img.src = q.image;
-            img.onload = () => {
-                loadedImages++;
-                updateProgress();
-            };
+            img.src = imgSrc;
             preloadedImages.push(img);
         });
-
-        results.forEach(result => {
-            result.imgs.forEach(imgSrc => {
-                const img = new Image();
-                img.src = imgSrc;
-                img.onload = () => {
-                    loadedImages++;
-                    updateProgress();
-                };
-                preloadedImages.push(img);
-            });
-        });
     });
+
+    console.log("Images preloaded:", preloadedImages);
 }
 
+window.onload = preloadImages;
 
 let currentQuestion = 0;
 let totalScore = 0;
@@ -235,13 +190,11 @@ const retryBtn = getElementbyID("retry-btn");
 const skipBtn = getElementbyID('skip-email-btn')
 const submitBtn = getElementbyID('submit-email-btn');
 const emailSec = getElementbyID("email-collection");
-const shareBtn = getElementbyID('share-btn');
 
 startBtn.addEventListener('click', startQuiz);
 retryBtn.addEventListener('click', retryQuiz);
 skipBtn.addEventListener('click', showResult);
 submitBtn.addEventListener('click', emailSubmit);
-shareBtn.addEventListener('click', shareGame);
 
 
 function getElementbyID(id) {
@@ -329,6 +282,7 @@ function loadQuestion() {
 
     const question = questions[currentQuestion];
     questionElement.textContent = question.question;
+    // imageElement.src = question.image;
     const preloadedImg = preloadedImages.find(img => img.src.includes(question.image));
     imageElement.src = preloadedImg ? preloadedImg.src : question.image;
     optionsElement.innerHTML = '';
@@ -336,7 +290,8 @@ function loadQuestion() {
     const shuffledOptions = shuffle([...question.options]);
     shuffledOptions.forEach(option => {
         const button = document.createElement('button');
-        button.className = `option`;
+        button.className = `option bg-[#ffe6e6] text-[#ff4d4d] px-4 py-2 lg:px-8 lg:py-4 text-center text-lg font-bold rounded-[15px] cursor-pointer 
+        transition-all duration-500 hover:bg-[#ffcccc] hover:scale-105 lg:hover:scale-110 border border-black `;
         button.textContent = option.text;
         button.onclick = () => handleAnswer(option.score);
         optionsElement.appendChild(button);
@@ -356,10 +311,6 @@ function handleAnswer(score) {
     }
 }
 
-let randomImgSrc;
-let preloadedResultImg;
-let result;
-
 function showResult() {
     hideComponent(emailSec);
     showComponent(resultSec);
@@ -368,10 +319,12 @@ function showResult() {
     const badge = document.querySelector('.badge');
 
 
-    result = results.find(r => totalScore >= r.minScore);
+    const result = results.find(r => totalScore >= r.minScore);
 
-    randomImgSrc = result.imgs[Math.floor(Math.random() * result.imgs.length)];
-    preloadedResultImg = preloadedImages.find(img => img.src.includes(randomImgSrc));
+    //const selImg = result.imgs[Math.floor(Math.random() * result.imgs.length)];
+    // image.src = selImg;
+    const randomImgSrc = result.imgs[Math.floor(Math.random() * result.imgs.length)];
+    const preloadedResultImg = preloadedImages.find(img => img.src.includes(randomImgSrc));
     image.src = preloadedResultImg ? preloadedResultImg.src : randomImgSrc;
 
     resultTitle.textContent = result.title;
@@ -393,163 +346,6 @@ function retryQuiz() {
     totalScore = 0;
     hideComponent(resultSec);
     showComponent(startSec);
-}
-
-function shareGame() {
-<<<<<<< HEAD
-    const userPic = FBInstant.player.getPhoto();
-    const userName = FBInstant.player.getName();
-=======
-    const result = results.find(r => totalScore >= r.minScore);
-    const randomImgSrc = result.imgs[Math.floor(Math.random() * result.imgs.length)];
-    const preloadedResultImg = preloadedImages.find(img => img.src.includes(randomImgSrc));
-    const userPic = FBInstant.player.getPhoto(); // Get user profile picture
-    const userName = FBInstant.player.getName();
-    console.log("User Pic:", userPic);
-    console.log("User Name:", userName);
-    console.log("Preloaded Image:", preloadedResultImg ? preloadedResultImg.src : randomImgSrc);
->>>>>>> c4a9707c3c0e33867bf5955252be4eb63f3bbb16
-
-    function generateShareImage(callback) {
-        let canvas = document.createElement('canvas');
-        let ctx = canvas.getContext('2d');
-
-<<<<<<< HEAD
-        canvas.width = 800;
-        canvas.height = 800;
-=======
-        canvas.width = 800;  // Adjust as needed
-        canvas.height = 800;  // Adjust as needed
->>>>>>> c4a9707c3c0e33867bf5955252be4eb63f3bbb16
-
-        let bgImage = new Image();
-        bgImage.src = preloadedResultImg ? preloadedResultImg.src : randomImgSrc;
-        bgImage.crossOrigin = 'Anonymous';
-
-        bgImage.onload = function () {
-<<<<<<< HEAD
-            ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
-
-            let profileSize = 115;
-            let profileX = 340;
-            let profileY = canvas.height - 250;
-
-            ctx.font = "bold 50px Oswald, Arial";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.fillStyle = "#FFFFFF";
-
-            ctx.strokeStyle = "#000000";
-            ctx.lineWidth = 8;
-
-            ctx.strokeText(userName, 400, profileY + profileSize + 45);
-            ctx.fillText(userName, 400, profileY + profileSize + 45);
-
-            ctx.strokeText(`আমি ${result.title} ${result.icon}`, 400, profileY + profileSize + 100);
-            ctx.fillText(`আমি ${result.title} ${result.icon}`, 400, profileY + profileSize + 100);
-
-=======
-            // Draw user's profile image
->>>>>>> c4a9707c3c0e33867bf5955252be4eb63f3bbb16
-            let profileImg = new Image();
-            profileImg.src = userPic;
-            profileImg.crossOrigin = 'Anonymous';
-
-            profileImg.onload = function () {
-<<<<<<< HEAD
-                ctx.beginPath();
-                ctx.arc(profileX + profileSize / 2, profileY + profileSize / 2, profileSize / 2 + 5, 0, Math.PI * 2);
-                ctx.strokeStyle = "#000000";
-                ctx.lineWidth = 8;
-                ctx.stroke();
-                ctx.closePath();
-=======
-
-                ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
-
-                let profileSize = 120;
-                let profileX = 340;
-                let profileY = canvas.height - 350;
->>>>>>> c4a9707c3c0e33867bf5955252be4eb63f3bbb16
-
-                ctx.beginPath();
-                ctx.arc(profileX + profileSize / 2, profileY + profileSize / 2, profileSize / 2, 0, Math.PI * 2);
-                ctx.closePath();
-                ctx.clip();
-<<<<<<< HEAD
-
-                ctx.drawImage(profileImg, profileX, profileY, profileSize, profileSize);
-        
-=======
-                ctx.drawImage(profileImg, profileX, profileY, profileSize, profileSize);
-                ctx.restore();
-
-                // Save the canvas state
-                ctx.save();
-
-                // Draw user name (just below the profile image)
-                ctx.fillStyle = "#FF0000";
-                ctx.font = "bold 40px Arial";
-                ctx.textAlign = "center";
-
-                textY = 200;
-                textX = 200;
-
-                // Debugging text settings
-                console.log("Font Settings:", ctx.font, ctx.textAlign, ctx.fillStyle);
-
-                // Adjust text position to make sure it's centered
-                ctx.fillText(userName, textX, textY);
-
-                // Debugging text drawing
-                console.log("Drawing user name at:", textX, textY);
-                
-                // Draw score on the next line under the user name
-                ctx.fillText(`আমি ${result.title}`, textX + 50, textY + 90);  // Adjusted to next line
-                
-                // Debugging text drawing
-                console.log("Drawing score at:", textX + 50, textY + 90);
-
-                // Restore the canvas state
-                ctx.restore();
-                
-                // Convert canvas to Base64 image
->>>>>>> c4a9707c3c0e33867bf5955252be4eb63f3bbb16
-                let dataURL = canvas.toDataURL("image/png");
-                callback(dataURL);
-            };
-            profileImg.onerror = function() {
-                console.error('Profile image failed to load');
-            };
-        };
-        bgImage.onerror = function() {
-            console.error('Background image failed to load');
-        };
-    }
-
-    generateShareImage((base64Image) => {
-        const payload = {
-            intent: 'SHARE',
-            image: base64Image,
-            text: `আমি ${result.title}!\nআপনি কত ভালো সুনাগরিক? পরীক্ষা করে দেখুন!`,
-            data: {
-                myResult: result.title,
-                score: totalScore
-            }
-        };
-<<<<<<< HEAD
-=======
-        console.log('Payload:', payload);
->>>>>>> c4a9707c3c0e33867bf5955252be4eb63f3bbb16
-    
-        if (FBInstant.shareAsync) {
-            FBInstant.shareAsync(payload)
-            .then(() => console.log('Share Successful!'))
-            .catch(error => console.error('Error sharing: ', error));
-        } else {
-            console.error('FBInstant.shareAsync is not available.');
-        }        
-    });
 }
 
 function showEmailCol() {
